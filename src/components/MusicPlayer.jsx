@@ -22,42 +22,35 @@ export default function MusicPlayer() {
     const audio = audioRef.current;
     if (!audio) return;
 
+    const events = ['pointerdown', 'touchend', 'click', 'keydown'];
     let unlocked = false;
-    let pendingPlay = null;
-
-    const events = ['touchstart', 'touchmove', 'pointerdown', 'click', 'keydown', 'scroll', 'wheel'];
 
     const removeListeners = () => {
       events.forEach((evt) => {
-        const isPassive = evt === 'scroll' || evt === 'wheel' || evt === 'touchmove';
-        window.removeEventListener(evt, handleFirstInteraction, { capture: true, passive: isPassive });
+        window.removeEventListener(evt, handleFirstInteraction, true);
       });
     };
 
     const handleFirstInteraction = () => {
       if (unlocked || isManualPausedRef.current || !audio.paused) return;
-      if (pendingPlay) return;
 
-      pendingPlay = audio.play();
-      if (pendingPlay !== undefined) {
-        pendingPlay
-          .then(() => {
-            unlocked = true;
-            pendingPlay = null;
-            removeListeners();
-          })
-          .catch(() => {
-            pendingPlay = null;
-          });
+      const p = audio.play();
+      if (p !== undefined) {
+        p.then(() => {
+          unlocked = true;
+          removeListeners();
+        }).catch(() => {
+          // Silent catch: allows subsequent events (like touchend) to retry if pointerdown was rejected
+        });
       }
     };
 
-    // Attach listeners immediately so we don't miss the first touch if the user interacts instantly
+    // Attach listeners immediately in the capture phase
     events.forEach((evt) => {
-      const isPassive = evt === 'scroll' || evt === 'wheel' || evt === 'touchmove';
-      window.addEventListener(evt, handleFirstInteraction, { capture: true, passive: isPassive });
+      window.addEventListener(evt, handleFirstInteraction, { capture: true });
     });
 
+    // Try autoplay on mount
     const initPlay = audio.play();
     if (initPlay !== undefined) {
       initPlay
@@ -65,9 +58,7 @@ export default function MusicPlayer() {
           unlocked = true;
           removeListeners();
         })
-        .catch(() => {
-          // Listeners are already attached, they will handle the unlock
-        });
+        .catch(() => {});
     }
 
     return () => {
