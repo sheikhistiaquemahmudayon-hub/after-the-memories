@@ -25,11 +25,12 @@ export default function MusicPlayer() {
     let unlocked = false;
     let pendingPlay = null;
 
-    const events = ['touchstart', 'pointerdown', 'click', 'keydown'];
+    const events = ['touchstart', 'touchmove', 'pointerdown', 'click', 'keydown', 'scroll', 'wheel'];
 
     const removeListeners = () => {
       events.forEach((evt) => {
-        window.removeEventListener(evt, handleFirstInteraction);
+        const isPassive = evt === 'scroll' || evt === 'wheel' || evt === 'touchmove';
+        window.removeEventListener(evt, handleFirstInteraction, { capture: true, passive: isPassive });
       });
     };
 
@@ -51,21 +52,22 @@ export default function MusicPlayer() {
       }
     };
 
+    // Attach listeners immediately so we don't miss the first touch if the user interacts instantly
+    events.forEach((evt) => {
+      const isPassive = evt === 'scroll' || evt === 'wheel' || evt === 'touchmove';
+      window.addEventListener(evt, handleFirstInteraction, { capture: true, passive: isPassive });
+    });
+
     const initPlay = audio.play();
     if (initPlay !== undefined) {
       initPlay
         .then(() => {
           unlocked = true;
+          removeListeners();
         })
         .catch(() => {
-          events.forEach((evt) => {
-            window.addEventListener(evt, handleFirstInteraction);
-          });
+          // Listeners are already attached, they will handle the unlock
         });
-    } else {
-      events.forEach((evt) => {
-        window.addEventListener(evt, handleFirstInteraction);
-      });
     }
 
     return () => {
