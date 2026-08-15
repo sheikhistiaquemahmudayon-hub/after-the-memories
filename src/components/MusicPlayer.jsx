@@ -22,7 +22,7 @@ export default function MusicPlayer() {
     const audio = audioRef.current;
     if (!audio) return;
 
-    audio.play().catch(() => {});
+    let isAttempting = false;
 
     const events = [
       'touchstart',
@@ -47,22 +47,31 @@ export default function MusicPlayer() {
     };
 
     const unlockAndPlay = () => {
-      if (isManualPausedRef.current || !audio) return;
+      if (isManualPausedRef.current || !audio || isAttempting) return;
 
       if (!audio.paused) {
         cleanListeners();
         return;
       }
 
+      isAttempting = true;
       const playPromise = audio.play();
       if (playPromise !== undefined) {
         playPromise
           .then(() => {
+            isAttempting = false;
             cleanListeners();
           })
-          .catch(() => {});
+          .catch(() => {
+            isAttempting = false;
+          });
+      } else {
+        isAttempting = false;
       }
     };
+
+    // Attempt autoplay on mount (will succeed on desktop if allowed)
+    unlockAndPlay();
 
     events.forEach((evt) => {
       window.addEventListener(evt, unlockAndPlay, { capture: true });
