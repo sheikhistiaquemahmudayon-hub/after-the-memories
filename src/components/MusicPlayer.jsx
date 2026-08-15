@@ -44,7 +44,10 @@ export default function MusicPlayer() {
         tabIndex={0}
         aria-label="Tap to Open Experience"
       >
+        <div className="entry-ambient-glow" aria-hidden="true" />
         <div className="entry-card" onClick={(e) => e.stopPropagation()}>
+          <span className="entry-tag">Memoir</span>
+          <div className="entry-divider" aria-hidden="true" />
           <p className="entry-subtitle">a few things I never knew how to say</p>
           <button
             type="button"
@@ -54,7 +57,6 @@ export default function MusicPlayer() {
             <span>Tap to Open</span>
             <span aria-hidden="true">✨</span>
           </button>
-          <span className="entry-hint">🎧 Best experienced with sound</span>
         </div>
       </div>
 
