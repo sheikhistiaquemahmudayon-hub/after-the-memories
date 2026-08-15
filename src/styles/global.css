@@ -237,24 +237,6 @@ img {
   100% { transform: translateY(-5px); }
 }
 
-.entry-tag {
-  font-family: var(--sans);
-  font-size: 0.65rem;
-  font-weight: 500;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: var(--ink-gold);
-  opacity: 0.75;
-}
-
-.entry-divider {
-  width: 32px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--ink-gold), transparent);
-  opacity: 0.4;
-  margin: -0.4rem 0;
-}
-
 .entry-subtitle {
   font-family: var(--serif);
   font-size: 1.45rem;

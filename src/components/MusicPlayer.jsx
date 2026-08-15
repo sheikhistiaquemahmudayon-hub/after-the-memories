@@ -46,16 +46,13 @@ export default function MusicPlayer() {
       >
         <div className="entry-ambient-glow" aria-hidden="true" />
         <div className="entry-card" onClick={(e) => e.stopPropagation()}>
-          <span className="entry-tag">Memoir</span>
-          <div className="entry-divider" aria-hidden="true" />
-          <p className="entry-subtitle">a few things I never knew how to say</p>
+          <p className="entry-subtitle">A confession from a distance I could never bridge</p>
           <button
             type="button"
             className="entry-btn"
             onClick={startExperience}
           >
-            <span>Tap to Open</span>
-            <span aria-hidden="true">✨</span>
+            Tap to Open
           </button>
         </div>
       </div>
