@@ -23,36 +23,21 @@ export default function MusicPlayer() {
     if (!audio) return;
 
     let isAttempting = false;
-
-    const events = [
-      'touchstart',
-      'touchend',
-      'pointerdown',
-      'pointerup',
-      'mousedown',
-      'click',
-      'keydown',
-      'scroll',
-      'wheel',
-    ];
+    const events = ['touchstart', 'pointerdown', 'click', 'keydown', 'scroll', 'wheel'];
 
     const cleanListeners = () => {
       events.forEach((evt) => {
-        window.removeEventListener(evt, unlockAndPlay, true);
-        document.removeEventListener(evt, unlockAndPlay, true);
-        if (document.body) {
-          document.body.removeEventListener(evt, unlockAndPlay, true);
-        }
+        window.removeEventListener(evt, handleInteraction, true);
       });
     };
 
-    const unlockAndPlay = () => {
-      if (isManualPausedRef.current || !audio || isAttempting) return;
-
+    const handleInteraction = () => {
+      if (isManualPausedRef.current || !audio) return;
       if (!audio.paused) {
         cleanListeners();
         return;
       }
+      if (isAttempting) return;
 
       isAttempting = true;
       const playPromise = audio.play();
@@ -70,16 +55,24 @@ export default function MusicPlayer() {
       }
     };
 
-    // Attempt autoplay on mount (will succeed on desktop if allowed)
-    unlockAndPlay();
-
-    events.forEach((evt) => {
-      window.addEventListener(evt, unlockAndPlay, { capture: true });
-      document.addEventListener(evt, unlockAndPlay, { capture: true });
-      if (document.body) {
-        document.body.addEventListener(evt, unlockAndPlay, { capture: true });
-      }
-    });
+    // 1. Try to play immediately (works on desktop if allowed)
+    const initPromise = audio.play();
+    if (initPromise !== undefined) {
+      initPromise
+        .then(() => {
+          // Success on mount! No need for interaction listeners.
+        })
+        .catch(() => {
+          // 2. If it fails (mobile autoplay blocked), attach listeners
+          events.forEach((evt) => {
+            window.addEventListener(evt, handleInteraction, true);
+          });
+        });
+    } else {
+      events.forEach((evt) => {
+        window.addEventListener(evt, handleInteraction, true);
+      });
+    }
 
     return () => {
       cleanListeners();
