@@ -22,57 +22,58 @@ export default function MusicPlayer() {
     const audio = audioRef.current;
     if (!audio) return;
 
-    let isAttempting = false;
+    audio.play().catch(() => {});
 
     const events = [
       'touchstart',
       'touchend',
       'pointerdown',
       'pointerup',
+      'mousedown',
       'click',
+      'keydown',
       'scroll',
       'wheel',
-      'keydown',
     ];
 
-    const removeListeners = () => {
-      events.forEach((event) => {
-        window.removeEventListener(event, handleInteraction, true);
-        document.removeEventListener(event, handleInteraction, true);
+    const cleanListeners = () => {
+      events.forEach((evt) => {
+        window.removeEventListener(evt, unlockAndPlay, true);
+        document.removeEventListener(evt, unlockAndPlay, true);
+        if (document.body) {
+          document.body.removeEventListener(evt, unlockAndPlay, true);
+        }
       });
     };
 
-    const handleInteraction = () => {
-      if (isManualPausedRef.current || !audio || isAttempting || !audio.paused) {
+    const unlockAndPlay = () => {
+      if (isManualPausedRef.current || !audio) return;
+
+      if (!audio.paused) {
+        cleanListeners();
         return;
       }
 
-      isAttempting = true;
       const playPromise = audio.play();
-
       if (playPromise !== undefined) {
         playPromise
           .then(() => {
-            isAttempting = false;
-            removeListeners();
+            cleanListeners();
           })
-          .catch(() => {
-            isAttempting = false;
-          });
-      } else {
-        isAttempting = false;
+          .catch(() => {});
       }
     };
 
-    events.forEach((event) => {
-      window.addEventListener(event, handleInteraction, { capture: true, passive: true });
-      document.addEventListener(event, handleInteraction, { capture: true, passive: true });
+    events.forEach((evt) => {
+      window.addEventListener(evt, unlockAndPlay, { capture: true });
+      document.addEventListener(evt, unlockAndPlay, { capture: true });
+      if (document.body) {
+        document.body.addEventListener(evt, unlockAndPlay, { capture: true });
+      }
     });
 
-    handleInteraction();
-
     return () => {
-      removeListeners();
+      cleanListeners();
     };
   }, []);
 
