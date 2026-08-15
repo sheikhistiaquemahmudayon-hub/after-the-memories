@@ -23,27 +23,29 @@ export default function MusicPlayer() {
     if (!audio) return;
 
     let unlocked = false;
-    const events = ['touchstart', 'touchend', 'pointerdown', 'pointerup', 'click', 'keydown'];
+    let lastAttempt = 0;
 
     const cleanup = () => {
-      events.forEach((evt) => window.removeEventListener(evt, tryPlay, true));
+      document.removeEventListener('touchstart', onTouch, true);
+      document.removeEventListener('click', onDesktop, true);
+      document.removeEventListener('keydown', onDesktop, true);
     };
 
-    const tryPlay = () => {
-      if (unlocked || isManualPausedRef.current || !audio.paused) {
-        if (!audio.paused) { unlocked = true; cleanup(); }
-        return;
-      }
-      audio.play().then(() => { unlocked = true; cleanup(); }).catch(() => {});
+    const play = () => {
+      if (unlocked || isManualPausedRef.current) return;
+      if (!audio.paused) { unlocked = true; cleanup(); return; }
+      const now = Date.now();
+      if (now - lastAttempt < 300) return;
+      lastAttempt = now;
+      audio.play().then(() => { unlocked = true; cleanup(); }).catch(() => { lastAttempt = 0; });
     };
 
-    events.forEach((evt) => window.addEventListener(evt, tryPlay, true));
+    const onTouch = () => play();
+    const onDesktop = () => play();
 
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    if (ctx.state === 'running') {
-      audio.play().then(() => { unlocked = true; cleanup(); }).catch(() => {});
-    }
-    ctx.close().catch(() => {});
+    document.addEventListener('touchstart', onTouch, { capture: true, passive: true });
+    document.addEventListener('click', onDesktop, { capture: true });
+    document.addEventListener('keydown', onDesktop, { capture: true });
 
     return cleanup;
   }, []);
