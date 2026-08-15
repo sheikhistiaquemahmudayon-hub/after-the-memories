@@ -3,14 +3,17 @@ import React, { useState, useRef, useEffect } from 'react';
 export default function MusicPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef(null);
+  const isManualPausedRef = useRef(false);
 
   const togglePlay = () => {
     const audio = audioRef.current;
     if (!audio) return;
 
     if (audio.paused) {
+      isManualPausedRef.current = false;
       audio.play().catch(() => {});
     } else {
+      isManualPausedRef.current = true;
       audio.pause();
     }
   };
@@ -19,18 +22,47 @@ export default function MusicPlayer() {
     const audio = audioRef.current;
     if (!audio) return;
 
-    const handleFirstInteraction = () => {
-      audio.play().catch(() => {});
+    const events = [
+      'touchstart',
+      'touchend',
+      'touchmove',
+      'pointerdown',
+      'pointerup',
+      'click',
+      'keydown',
+      'scroll',
+      'wheel',
+    ];
+
+    const removeListeners = () => {
+      events.forEach((event) => {
+        window.removeEventListener(event, handleInteraction);
+        document.removeEventListener(event, handleInteraction);
+      });
     };
 
-    audio.play().catch(() => {
-      window.addEventListener('pointerdown', handleFirstInteraction, { once: true });
-      window.addEventListener('keydown', handleFirstInteraction, { once: true });
+    const handleInteraction = () => {
+      if (isManualPausedRef.current || !audio) return;
+
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            removeListeners();
+          })
+          .catch(() => {});
+      }
+    };
+
+    events.forEach((event) => {
+      window.addEventListener(event, handleInteraction, { passive: true });
+      document.addEventListener(event, handleInteraction, { passive: true });
     });
 
+    handleInteraction();
+
     return () => {
-      window.removeEventListener('pointerdown', handleFirstInteraction);
-      window.removeEventListener('keydown', handleFirstInteraction);
+      removeListeners();
     };
   }, []);
 
@@ -38,6 +70,7 @@ export default function MusicPlayer() {
     <div className="music-capsule-wrap">
       <audio
         ref={audioRef}
+        src="./audio/music.m4a"
         loop
         preload="auto"
         playsInline
@@ -45,7 +78,6 @@ export default function MusicPlayer() {
         onPause={() => setIsPlaying(false)}
       >
         <source src="./audio/music.m4a" type="audio/mp4" />
-        <source src="./audio/song.mp3" type="audio/mpeg" />
       </audio>
       <button
         type="button"
