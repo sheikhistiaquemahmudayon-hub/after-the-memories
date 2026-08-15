@@ -22,41 +22,51 @@ export default function MusicPlayer() {
     const audio = audioRef.current;
     if (!audio) return;
 
+    let isAttempting = false;
+
     const events = [
       'touchstart',
       'touchend',
-      'touchmove',
       'pointerdown',
       'pointerup',
       'click',
-      'keydown',
       'scroll',
       'wheel',
+      'keydown',
     ];
 
     const removeListeners = () => {
       events.forEach((event) => {
-        window.removeEventListener(event, handleInteraction);
-        document.removeEventListener(event, handleInteraction);
+        window.removeEventListener(event, handleInteraction, true);
+        document.removeEventListener(event, handleInteraction, true);
       });
     };
 
     const handleInteraction = () => {
-      if (isManualPausedRef.current || !audio) return;
+      if (isManualPausedRef.current || !audio || isAttempting || !audio.paused) {
+        return;
+      }
 
+      isAttempting = true;
       const playPromise = audio.play();
+
       if (playPromise !== undefined) {
         playPromise
           .then(() => {
+            isAttempting = false;
             removeListeners();
           })
-          .catch(() => {});
+          .catch(() => {
+            isAttempting = false;
+          });
+      } else {
+        isAttempting = false;
       }
     };
 
     events.forEach((event) => {
-      window.addEventListener(event, handleInteraction, { passive: true });
-      document.addEventListener(event, handleInteraction, { passive: true });
+      window.addEventListener(event, handleInteraction, { capture: true, passive: true });
+      document.addEventListener(event, handleInteraction, { capture: true, passive: true });
     });
 
     handleInteraction();
@@ -76,9 +86,7 @@ export default function MusicPlayer() {
         playsInline
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
-      >
-        <source src="./audio/music.m4a" type="audio/mp4" />
-      </audio>
+      />
       <button
         type="button"
         className={`music-capsule ${isPlaying ? 'music-capsule--playing' : ''}`}
