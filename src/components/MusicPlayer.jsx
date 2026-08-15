@@ -22,48 +22,30 @@ export default function MusicPlayer() {
     const audio = audioRef.current;
     if (!audio) return;
 
-    const events = ['pointerdown', 'touchend', 'click', 'keydown'];
     let unlocked = false;
+    const events = ['touchstart', 'touchend', 'pointerdown', 'pointerup', 'click', 'keydown'];
 
-    const removeListeners = () => {
-      events.forEach((evt) => {
-        window.removeEventListener(evt, handleFirstInteraction, true);
-      });
+    const cleanup = () => {
+      events.forEach((evt) => window.removeEventListener(evt, tryPlay, true));
     };
 
-    const handleFirstInteraction = () => {
-      if (unlocked || isManualPausedRef.current || !audio.paused) return;
-
-      const p = audio.play();
-      if (p !== undefined) {
-        p.then(() => {
-          unlocked = true;
-          removeListeners();
-        }).catch(() => {
-          // Silent catch: allows subsequent events (like touchend) to retry if pointerdown was rejected
-        });
+    const tryPlay = () => {
+      if (unlocked || isManualPausedRef.current || !audio.paused) {
+        if (!audio.paused) { unlocked = true; cleanup(); }
+        return;
       }
+      audio.play().then(() => { unlocked = true; cleanup(); }).catch(() => {});
     };
 
-    // Attach listeners immediately in the capture phase
-    events.forEach((evt) => {
-      window.addEventListener(evt, handleFirstInteraction, { capture: true });
-    });
+    events.forEach((evt) => window.addEventListener(evt, tryPlay, true));
 
-    // Try autoplay on mount
-    const initPlay = audio.play();
-    if (initPlay !== undefined) {
-      initPlay
-        .then(() => {
-          unlocked = true;
-          removeListeners();
-        })
-        .catch(() => {});
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (ctx.state === 'running') {
+      audio.play().then(() => { unlocked = true; cleanup(); }).catch(() => {});
     }
+    ctx.close().catch(() => {});
 
-    return () => {
-      removeListeners();
-    };
+    return cleanup;
   }, []);
 
   return (
