@@ -22,60 +22,54 @@ export default function MusicPlayer() {
     const audio = audioRef.current;
     if (!audio) return;
 
-    let isAttempting = false;
-    const events = ['touchstart', 'pointerdown', 'click', 'keydown', 'scroll', 'wheel'];
+    let unlocked = false;
+    let pendingPlay = null;
 
-    const cleanListeners = () => {
+    const events = ['touchstart', 'pointerdown', 'click', 'keydown'];
+
+    const removeListeners = () => {
       events.forEach((evt) => {
-        window.removeEventListener(evt, handleInteraction, true);
+        window.removeEventListener(evt, handleFirstInteraction);
       });
     };
 
-    const handleInteraction = () => {
-      if (isManualPausedRef.current || !audio) return;
-      if (!audio.paused) {
-        cleanListeners();
-        return;
-      }
-      if (isAttempting) return;
+    const handleFirstInteraction = () => {
+      if (unlocked || isManualPausedRef.current || !audio.paused) return;
+      if (pendingPlay) return;
 
-      isAttempting = true;
-      const playPromise = audio.play();
-      if (playPromise !== undefined) {
-        playPromise
+      pendingPlay = audio.play();
+      if (pendingPlay !== undefined) {
+        pendingPlay
           .then(() => {
-            isAttempting = false;
-            cleanListeners();
+            unlocked = true;
+            pendingPlay = null;
+            removeListeners();
           })
           .catch(() => {
-            isAttempting = false;
+            pendingPlay = null;
           });
-      } else {
-        isAttempting = false;
       }
     };
 
-    // 1. Try to play immediately (works on desktop if allowed)
-    const initPromise = audio.play();
-    if (initPromise !== undefined) {
-      initPromise
+    const initPlay = audio.play();
+    if (initPlay !== undefined) {
+      initPlay
         .then(() => {
-          // Success on mount! No need for interaction listeners.
+          unlocked = true;
         })
         .catch(() => {
-          // 2. If it fails (mobile autoplay blocked), attach listeners
           events.forEach((evt) => {
-            window.addEventListener(evt, handleInteraction, true);
+            window.addEventListener(evt, handleFirstInteraction);
           });
         });
     } else {
       events.forEach((evt) => {
-        window.addEventListener(evt, handleInteraction, true);
+        window.addEventListener(evt, handleFirstInteraction);
       });
     }
 
     return () => {
-      cleanListeners();
+      removeListeners();
     };
   }, []);
 
