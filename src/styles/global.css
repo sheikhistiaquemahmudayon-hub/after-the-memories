@@ -40,7 +40,6 @@
 }
 
 html {
-  scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
   background: var(--bg);
   overflow-x: hidden;
@@ -721,7 +720,8 @@ section {
   overflow: hidden;
   position: relative;
   width: 100%;
-  background: #0a0a0d;
+  aspect-ratio: 3 / 4;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.04) 0%, #070709 100%);
 }
 
 .memory-card__img-wrap img {
@@ -729,11 +729,16 @@ section {
   height: 100%;
   object-fit: cover;
   display: block;
+  opacity: 0;
   filter: grayscale(100%) contrast(1.08) brightness(0.88);
-  transition: filter 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: opacity 0.6s ease, filter 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
   will-change: transform;
   transform: translate3d(0, 0, 0);
   backface-visibility: hidden;
+}
+
+.memory-card__img-wrap img.memory-card__img--loaded {
+  opacity: 1;
 }
 
 .memory-card__frame:hover .memory-card__img-wrap img,
@@ -1178,9 +1183,22 @@ section {
     margin-bottom: 4rem;
   }
 
+  .memory-card--left,
+  .memory-card--right {
+    align-items: center;
+  }
+
   .memory-card--left .memory-card__frame,
   .memory-card--right .memory-card__frame {
-    width: 92%;
+    width: 100%;
+    max-width: 480px;
+  }
+
+  .memory-card--left .memory-card__caption,
+  .memory-card--right .memory-card__caption {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .chapter__line {
@@ -1204,6 +1222,26 @@ section {
 
   .app-container {
     padding: 0 5vw;
+  }
+
+  .entry-card {
+    padding: 2.2rem 1.4rem;
+    gap: 1.1rem;
+    border-radius: 20px;
+  }
+
+  .entry-subtitle {
+    font-size: 1.25rem;
+  }
+
+  .entry-input {
+    font-size: 0.9rem;
+    padding: 0.75rem 1rem;
+    max-width: 100%;
+  }
+
+  .entry-btn {
+    padding: 0.85rem 2.2rem;
   }
 
   .hero__line {

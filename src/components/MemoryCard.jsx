@@ -1,13 +1,28 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
+let refreshTimer = null;
+const debouncedScrollTriggerRefresh = () => {
+  if (refreshTimer) clearTimeout(refreshTimer);
+  refreshTimer = setTimeout(() => {
+    ScrollTrigger.refresh();
+  }, 250);
+};
+
 export default function MemoryCard({ memory, layout = 'center' }) {
+  const [isLoaded, setIsLoaded] = useState(false);
   const cardRef = useRef(null);
   const imageRef = useRef(null);
   const overlayRef = useRef(null);
+
+  useEffect(() => {
+    if (imageRef.current?.complete && imageRef.current.naturalWidth > 0) {
+      setIsLoaded(true);
+    }
+  }, []);
 
   useEffect(() => {
     const card = cardRef.current;
@@ -87,7 +102,11 @@ export default function MemoryCard({ memory, layout = 'center' }) {
             loading="lazy"
             decoding="async"
             ref={imageRef}
-            onLoad={() => ScrollTrigger.refresh()}
+            className={`memory-card__img ${isLoaded ? 'memory-card__img--loaded' : ''}`}
+            onLoad={() => {
+              setIsLoaded(true);
+              debouncedScrollTriggerRefresh();
+            }}
           />
         </div>
         {memory.overlay && (
