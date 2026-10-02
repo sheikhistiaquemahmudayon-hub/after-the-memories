@@ -40,9 +40,11 @@ export default function Chirkut() {
   return (
     <section className="chirkut" id="chirkut" ref={sectionRef}>
       <div className="chirkut__inner">
-        <div className="chirkut__header">
-          <span className="chirkut__subtitle">একটি শেষ চিরকুট</span>
-        </div>
+        {siteData.chirkut.title && (
+          <div className="chirkut__header">
+            <span className="chirkut__subtitle">{siteData.chirkut.title}</span>
+          </div>
+        )}
 
         <div className="chirkut__content">
           {siteData.chirkut.paragraphs.map((paragraph, idx) => (

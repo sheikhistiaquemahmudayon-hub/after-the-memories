@@ -7,8 +7,10 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function FinalLetter() {
   const sectionRef = useRef(null);
+  const hasContent = (siteData.finalLetter?.paragraphs?.length > 0) || Boolean(siteData.finalLetter?.name || siteData.finalLetter?.signOff);
 
   useEffect(() => {
+    if (!hasContent) return;
     const section = sectionRef.current;
     if (!section) return;
 
@@ -38,6 +40,8 @@ export default function FinalLetter() {
 
     return () => ctx.revert();
   }, []);
+
+  if (!hasContent) return null;
 
   return (
     <section className="letter" id="final-letter" ref={sectionRef}>
