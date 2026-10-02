@@ -11,6 +11,7 @@ import FinalLetter from './sections/FinalLetter';
 import AmbientCanvas from './components/AmbientCanvas';
 import ScrollProgress from './components/ScrollProgress';
 import MusicPlayer from './components/MusicPlayer';
+import WatermarkFooter from './components/WatermarkFooter';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -47,6 +48,7 @@ export default function App() {
         <BirthdayReveal />
         <Chirkut />
         <FinalLetter />
+        <WatermarkFooter />
       </main>
     </>
   );
