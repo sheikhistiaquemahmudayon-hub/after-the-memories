@@ -48,8 +48,8 @@ export default function App() {
         <BirthdayReveal />
         <Chirkut />
         <FinalLetter />
-        <WatermarkFooter />
       </main>
+      <WatermarkFooter />
     </>
   );
 }
