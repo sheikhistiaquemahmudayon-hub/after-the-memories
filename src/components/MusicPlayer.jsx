@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-const PASSCODE = '4/10/2001';
+const PASSCODE = '4/10/2002';
 
 export default function MusicPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -26,7 +26,7 @@ export default function MusicPlayer() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const value = password.trim().replace(/[-.]/g, '/');
-    if (value === PASSCODE || value === '04/10/2001') {
+    if (value === PASSCODE || value === '04/10/2002') {
       setError(false);
       const audio = audioRef.current;
       if (audio && audio.paused) {
