@@ -3,8 +3,6 @@ import { memoriesData } from '../data/content';
 import MemoryCard from '../components/MemoryCard';
 import ChapterHeader from '../components/ChapterHeader';
 
-const LAYOUTS = ['center'];
-
 export default function Memories() {
   const items = memoriesData.filter(m => m.chapter === 'Memories');
 
@@ -12,11 +10,10 @@ export default function Memories() {
     <section className="chapter-section" id="memories">
       <ChapterHeader number="II" title="Memories" />
       <div className="memory-stream">
-        {items.map((memory, i) => (
+        {items.map((memory) => (
           <MemoryCard
             key={memory.id}
             memory={memory}
-            layout={LAYOUTS[i % LAYOUTS.length]}
           />
         ))}
       </div>

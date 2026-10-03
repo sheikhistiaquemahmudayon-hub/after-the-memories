@@ -3,8 +3,6 @@ import { memoriesData } from '../data/content';
 import MemoryCard from '../components/MemoryCard';
 import ChapterHeader from '../components/ChapterHeader';
 
-const LAYOUTS = ['center'];
-
 export default function Reflection() {
   const items = memoriesData.filter(m => m.chapter === 'Reflection');
 
@@ -12,11 +10,10 @@ export default function Reflection() {
     <section className="chapter-section" id="reflection">
       <ChapterHeader number="III" title="Reflection" />
       <div className="memory-stream">
-        {items.map((memory, i) => (
+        {items.map((memory) => (
           <MemoryCard
             key={memory.id}
             memory={memory}
-            layout={LAYOUTS[i % LAYOUTS.length]}
           />
         ))}
       </div>

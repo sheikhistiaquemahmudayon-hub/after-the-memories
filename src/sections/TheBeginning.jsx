@@ -3,8 +3,6 @@ import { memoriesData } from '../data/content';
 import MemoryCard from '../components/MemoryCard';
 import ChapterHeader from '../components/ChapterHeader';
 
-const LAYOUTS = ['center'];
-
 export default function TheBeginning() {
   const items = memoriesData.filter(m => m.chapter === 'The Beginning');
 
@@ -12,11 +10,10 @@ export default function TheBeginning() {
     <section className="chapter-section" id="the-beginning">
       <ChapterHeader number="I" title="The Beginning" />
       <div className="memory-stream">
-        {items.map((memory, i) => (
+        {items.map((memory) => (
           <MemoryCard
             key={memory.id}
             memory={memory}
-            layout={LAYOUTS[i % LAYOUTS.length]}
           />
         ))}
       </div>

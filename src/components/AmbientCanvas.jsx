@@ -98,12 +98,6 @@ export default function AmbientCanvas() {
     };
     window.addEventListener('resize', handleResize);
 
-    let isUnlocked = false;
-    const handleUnlock = () => {
-      isUnlocked = true;
-    };
-    window.addEventListener('site_unlocked', handleUnlock);
-
     function drawMajorStar(x, y, size, alpha) {
       ctx.save();
       ctx.translate(x, y);
@@ -287,7 +281,6 @@ export default function AmbientCanvas() {
       cancelAnimationFrame(animId);
       window.removeEventListener('pointerdown', handlePointerDown);
       window.removeEventListener('resize', handleResize);
-      window.removeEventListener('site_unlocked', handleUnlock);
       document.removeEventListener('visibilitychange', handleVisibility);
     };
   }, []);
