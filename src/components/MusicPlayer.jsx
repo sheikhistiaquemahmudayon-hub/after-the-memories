@@ -1,6 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 
 const PASSCODE = '4/10/2002';
+const EARLY_PRELOAD_IMAGES = [
+  './images/pic1.jpg',
+  './images/pic2.jpg',
+  './images/pic3.jpg',
+  './images/pic4.jpg',
+];
 
 export default function MusicPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -14,6 +20,11 @@ export default function MusicPlayer() {
     try {
       sessionStorage.removeItem('site_unlocked');
     } catch (_) {}
+
+    EARLY_PRELOAD_IMAGES.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
   }, []);
 
   useEffect(() => {
@@ -23,14 +34,26 @@ export default function MusicPlayer() {
     };
   }, [hasEntered]);
 
+  const handleWarmup = () => {
+    const audio = audioRef.current;
+    if (audio && audio.readyState === 0) {
+      audio.load();
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const value = password.trim().replace(/[-.]/g, '/');
     if (value === PASSCODE || value === '04/10/2002') {
       setError(false);
       const audio = audioRef.current;
-      if (audio && audio.paused) {
-        audio.play().catch(() => {});
+      if (audio) {
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => setIsPlaying(true))
+            .catch(() => {});
+        }
       }
       setHasEntered(true);
     } else {
@@ -78,7 +101,9 @@ export default function MusicPlayer() {
               className={`entry-input ${error ? 'entry-input--error' : ''}`}
               placeholder="Enter passcode..."
               value={password}
+              onFocus={handleWarmup}
               onChange={(e) => {
+                handleWarmup();
                 setPassword(e.target.value);
                 if (error) setError(false);
               }}

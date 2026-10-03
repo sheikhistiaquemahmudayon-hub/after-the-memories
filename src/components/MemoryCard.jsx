@@ -91,6 +91,8 @@ export default function MemoryCard({ memory, layout = 'center' }) {
 
   const layoutClass = `memory-card memory-card--${layout}`;
 
+  const isPriority = memory.id <= 3;
+
   return (
     <div className={layoutClass} ref={cardRef}>
       <div className="memory-card__frame">
@@ -99,8 +101,9 @@ export default function MemoryCard({ memory, layout = 'center' }) {
           <img
             src={memory.image}
             alt={memory.caption || 'Memory'}
-            loading="lazy"
-            decoding="async"
+            loading={isPriority ? 'eager' : 'lazy'}
+            fetchPriority={isPriority ? 'high' : 'auto'}
+            decoding={isPriority ? 'sync' : 'async'}
             ref={imageRef}
             className={`memory-card__img ${isLoaded ? 'memory-card__img--loaded' : ''}`}
             onLoad={() => {
