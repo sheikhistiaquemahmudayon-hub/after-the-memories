@@ -14,52 +14,43 @@ const debouncedScrollTriggerRefresh = () => {
 
 export default function MemoryCard({ memory, layout = 'center' }) {
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isTall, setIsTall] = useState(false);
   const cardRef = useRef(null);
   const imageRef = useRef(null);
   const overlayRef = useRef(null);
 
-  useEffect(() => {
-    if (imageRef.current?.complete && imageRef.current.naturalWidth > 0) {
+  const checkDimensions = () => {
+    const img = imageRef.current;
+    if (img && img.naturalWidth > 0 && img.naturalHeight > 0) {
       setIsLoaded(true);
+      if (img.naturalWidth / img.naturalHeight < 0.65) {
+        setIsTall(true);
+      }
     }
+  };
+
+  useEffect(() => {
+    checkDimensions();
   }, []);
 
   useEffect(() => {
     const card = cardRef.current;
-    const img = imageRef.current;
-    if (!card || !img) return;
+    if (!card) return;
 
     const ctx = gsap.context(() => {
       gsap.fromTo(
         card,
-        { opacity: 0, y: 55, scale: 0.97 },
+        { opacity: 0, y: 40 },
         {
           opacity: 1,
           y: 0,
-          scale: 1,
-          duration: 1.2,
+          duration: 1.0,
           ease: 'power3.out',
           scrollTrigger: {
             trigger: card,
-            start: 'top 85%',
+            start: 'top 88%',
             toggleActions: 'play none none none',
             onEnter: () => card.classList.add('memory-card--revealed'),
-          },
-        }
-      );
-
-      gsap.fromTo(
-        img,
-        { yPercent: -6, scale: 1.07 },
-        {
-          yPercent: 6,
-          scale: 1.07,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: card,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: 0.8,
           },
         }
       );
@@ -97,7 +88,7 @@ export default function MemoryCard({ memory, layout = 'center' }) {
     <div className={layoutClass} ref={cardRef}>
       <div className="memory-card__frame">
         <div className="memory-card__shimmer" aria-hidden="true" />
-        <div className="memory-card__img-wrap">
+        <div className={`memory-card__img-wrap ${isTall ? 'memory-card__img-wrap--tall' : ''}`}>
           <img
             src={memory.image}
             alt={memory.caption || 'Memory'}
@@ -107,7 +98,7 @@ export default function MemoryCard({ memory, layout = 'center' }) {
             ref={imageRef}
             className={`memory-card__img ${isLoaded ? 'memory-card__img--loaded' : ''}`}
             onLoad={() => {
-              setIsLoaded(true);
+              checkDimensions();
               debouncedScrollTriggerRefresh();
             }}
           />

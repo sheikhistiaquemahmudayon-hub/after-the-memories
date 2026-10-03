@@ -3,7 +3,7 @@ import { memoriesData } from '../data/content';
 import MemoryCard from '../components/MemoryCard';
 import ChapterHeader from '../components/ChapterHeader';
 
-const LAYOUTS = ['center', 'right', 'left', 'full', 'center', 'left'];
+const LAYOUTS = ['center'];
 
 export default function Memories() {
   const items = memoriesData.filter(m => m.chapter === 'Memories');

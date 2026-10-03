@@ -3,7 +3,7 @@ import { memoriesData } from '../data/content';
 import MemoryCard from '../components/MemoryCard';
 import ChapterHeader from '../components/ChapterHeader';
 
-const LAYOUTS = ['full', 'left', 'right', 'center', 'left'];
+const LAYOUTS = ['center'];
 
 export default function TheBeginning() {
   const items = memoriesData.filter(m => m.chapter === 'The Beginning');

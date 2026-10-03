@@ -56,6 +56,7 @@ export default function MusicPlayer() {
         }
       }
       setHasEntered(true);
+      window.dispatchEvent(new CustomEvent('site_unlocked'));
     } else {
       setError(true);
       setShake(true);
@@ -108,7 +109,6 @@ export default function MusicPlayer() {
                 if (error) setError(false);
               }}
               autoComplete="off"
-              autoFocus
             />
             {error && <span className="entry-error-msg">Incorrect passcode, try again</span>}
             <button type="submit" className="entry-btn">

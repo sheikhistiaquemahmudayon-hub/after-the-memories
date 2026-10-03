@@ -15,7 +15,7 @@ export default function AmbientCanvas() {
 
     const isMobile = width <= 768;
     const starCount = isMobile ? 55 : 95;
-    const petalCount = isMobile ? 7 : 14;
+    const petalCount = isMobile ? 20 : 32;
 
     const stars = Array.from({ length: starCount }, () => ({
       x: Math.random() * width,
@@ -37,12 +37,12 @@ export default function AmbientCanvas() {
     const petals = Array.from({ length: petalCount }, () => ({
       x: Math.random() * width,
       y: Math.random() * height,
-      size: Math.random() * 6 + 7,
+      size: Math.random() * 8 + 18,
       angle: Math.random() * Math.PI * 2,
-      angularSpeed: (Math.random() - 0.5) * 0.02,
-      speedY: Math.random() * 0.5 + 0.35,
-      speedX: Math.sin(Math.random() * Math.PI) * 0.4 + 0.15,
-      alpha: Math.random() * 0.07 + 0.03,
+      angularSpeed: (Math.random() - 0.5) * 0.025,
+      speedY: Math.random() * 0.9 + 0.8,
+      speedX: (Math.random() - 0.5) * 0.5,
+      alpha: Math.random() * 0.2 + 0.75,
     }));
 
     const sparkles = [];
@@ -97,6 +97,12 @@ export default function AmbientCanvas() {
       height = canvas.height = window.innerHeight;
     };
     window.addEventListener('resize', handleResize);
+
+    let isUnlocked = false;
+    const handleUnlock = () => {
+      isUnlocked = true;
+    };
+    window.addEventListener('site_unlocked', handleUnlock);
 
     function drawMajorStar(x, y, size, alpha) {
       ctx.save();
@@ -215,10 +221,31 @@ export default function AmbientCanvas() {
         ctx.save();
         ctx.translate(p.x, p.y);
         ctx.rotate(p.angle);
-        ctx.fillStyle = `rgba(223, 190, 132, ${p.alpha})`;
+        ctx.globalAlpha = Math.min(0.9, p.alpha);
+
+        const petalCount = 6;
+        const pLen = p.size * 0.55;
+        const pWid = p.size * 0.26;
+        ctx.fillStyle = '#ffffff';
+        for (let pi = 0; pi < petalCount; pi++) {
+          ctx.save();
+          ctx.rotate((pi * Math.PI * 2) / petalCount);
+          ctx.beginPath();
+          ctx.ellipse(pLen * 0.55, 0, pLen * 0.5, pWid * 0.5, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+
+        ctx.fillStyle = '#ff4d00';
         ctx.beginPath();
-        ctx.ellipse(0, 0, p.size * 0.45, p.size, 0, 0, Math.PI * 2);
+        ctx.arc(0, 0, p.size * 0.2, 0, Math.PI * 2);
         ctx.fill();
+
+        ctx.fillStyle = '#b71c1c';
+        ctx.beginPath();
+        ctx.arc(0, 0, p.size * 0.09, 0, Math.PI * 2);
+        ctx.fill();
+
         ctx.restore();
       }
 
@@ -260,6 +287,7 @@ export default function AmbientCanvas() {
       cancelAnimationFrame(animId);
       window.removeEventListener('pointerdown', handlePointerDown);
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('site_unlocked', handleUnlock);
       document.removeEventListener('visibilitychange', handleVisibility);
     };
   }, []);

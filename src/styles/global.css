@@ -281,7 +281,7 @@ img {
   border: 1px solid rgba(223, 190, 132, 0.28);
   color: var(--ink);
   font-family: var(--sans);
-  font-size: 0.95rem;
+  font-size: 16px;
   text-align: center;
   letter-spacing: 0.15em;
   outline: none;
@@ -624,41 +624,22 @@ section {
   transform: scale(0.985);
 }
 
-.memory-card--center {
-  align-items: center;
-  text-align: center;
-}
-
-.memory-card--center .memory-card__frame {
-  max-width: 540px;
-  width: 100%;
-}
-
-.memory-card--left {
-  align-items: flex-start;
-}
-
-.memory-card--left .memory-card__frame {
-  max-width: 500px;
-  width: 88%;
-}
-
-.memory-card--right {
-  align-items: flex-end;
-}
-
-.memory-card--right .memory-card__frame {
-  max-width: 500px;
-  width: 88%;
-}
-
+.memory-card--center,
+.memory-card--left,
+.memory-card--right,
 .memory-card--full {
   align-items: center;
+  text-align: center;
+  width: 100%;
 }
 
+.memory-card--center .memory-card__frame,
+.memory-card--left .memory-card__frame,
+.memory-card--right .memory-card__frame,
 .memory-card--full .memory-card__frame {
-  max-width: 100%;
+  max-width: 520px;
   width: 100%;
+  margin: 0 auto;
 }
 
 .memory-card__frame {
@@ -724,15 +705,20 @@ section {
   background: radial-gradient(circle at center, rgba(255, 255, 255, 0.04) 0%, #070709 100%);
 }
 
+.memory-card__img-wrap--tall {
+  aspect-ratio: 9 / 16;
+  max-height: 82vh;
+}
+
 .memory-card__img-wrap img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center 20%;
   display: block;
   opacity: 0;
   filter: grayscale(100%) contrast(1.08) brightness(0.88);
   transition: opacity 0.35s ease, filter 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
-  will-change: transform;
   transform: translate3d(0, 0, 0);
   backface-visibility: hidden;
 }
@@ -747,20 +733,19 @@ section {
 }
 
 .memory-card__caption {
-  margin-top: 1.8rem;
-  font-size: 0.9rem;
+  margin-top: 1.6rem;
+  font-size: 0.92rem;
   color: var(--ink-soft);
   font-family: var(--serif);
   font-style: italic;
   font-weight: 300;
-  max-width: 440px;
+  max-width: 480px;
+  width: 100%;
   line-height: 1.85;
-  letter-spacing: 0.04em;
-  padding: 0 0.5rem;
+  letter-spacing: 0.03em;
+  padding: 0 0.75rem;
   white-space: pre-line;
-}
-
-.memory-card--center .memory-card__caption {
+  text-align: center;
   margin-left: auto;
   margin-right: auto;
 }
@@ -989,8 +974,8 @@ section {
 }
 
 .chirkut {
-  padding-top: 14vh;
-  padding-bottom: 14vh;
+  padding-top: 10vh;
+  padding-bottom: 6vh;
   position: relative;
   display: flex;
   justify-content: center;
@@ -1038,10 +1023,50 @@ section {
   text-shadow: 0 2px 20px rgba(0, 0, 0, 0.8);
 }
 
+.chirkut__poem {
+  margin-top: 2rem;
+  padding: 2.2rem 1rem 1rem;
+  text-align: center;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.chirkut__poem-divider {
+  color: var(--ink-gold);
+  font-size: 1.05rem;
+  opacity: 0.8;
+  text-shadow: 0 0 16px rgba(223, 190, 132, 0.5);
+  margin: 0.3rem 0;
+  user-select: none;
+}
+
+.chirkut__poem-line {
+  font-family: 'Noto Serif Bengali', var(--serif), serif;
+  font-size: clamp(1.1rem, 3.4vw, 1.45rem);
+  font-style: italic;
+  font-weight: 400;
+  line-height: 2.1;
+  letter-spacing: 0.03em;
+  color: var(--ink-soft);
+  text-align: center;
+  text-shadow: 0 2px 25px rgba(0, 0, 0, 0.9), 0 0 30px rgba(223, 190, 132, 0.3);
+  word-break: keep-all;
+  margin: 0;
+}
+
+.chirkut__poem-line--highlight {
+  color: var(--ink-gold-bright);
+  font-weight: 500;
+  text-shadow: 0 2px 25px rgba(0, 0, 0, 0.9), 0 0 35px rgba(223, 190, 132, 0.5);
+}
+
 @media (max-width: 768px) {
   .chirkut {
-    padding-top: 10vh;
-    padding-bottom: 10vh;
+    padding-top: 8vh;
+    padding-bottom: 5vh;
   }
 
   .chirkut__content {
@@ -1051,6 +1076,16 @@ section {
   .chirkut__p {
     font-size: 0.92rem;
     line-height: 2.15;
+  }
+
+  .chirkut__poem {
+    margin-top: 1.5rem;
+    padding: 1.8rem 0.5rem 0.5rem;
+  }
+
+  .chirkut__poem-line {
+    font-size: 1.02rem;
+    line-height: 2.0;
   }
 }
 
@@ -1235,7 +1270,7 @@ section {
   }
 
   .entry-input {
-    font-size: 0.9rem;
+    font-size: 16px;
     padding: 0.75rem 1rem;
     max-width: 100%;
   }
@@ -1487,6 +1522,18 @@ section {
     padding: 1.5rem 1.2rem calc(3rem + var(--safe-bottom));
   }
 }
+
+.shiuli-rain-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 850;
+}
+
+
+
 
 @media (prefers-reduced-motion: reduce) {
   *,

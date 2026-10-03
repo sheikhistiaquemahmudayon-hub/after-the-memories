@@ -9,6 +9,7 @@ import BirthdayReveal from './sections/BirthdayReveal';
 import Chirkut from './sections/Chirkut';
 import FinalLetter from './sections/FinalLetter';
 import AmbientCanvas from './components/AmbientCanvas';
+import ShiuliRain from './components/ShiuliRain';
 import ScrollProgress from './components/ScrollProgress';
 import MusicPlayer from './components/MusicPlayer';
 import WatermarkFooter from './components/WatermarkFooter';
@@ -38,6 +39,7 @@ export default function App() {
       <ScrollProgress />
       <MusicPlayer />
       <AmbientCanvas />
+      <ShiuliRain />
       <div className="film-grain" aria-hidden="true" />
       <div className="vignette" aria-hidden="true" />
       <main className="app-container">
